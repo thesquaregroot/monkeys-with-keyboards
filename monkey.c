@@ -78,7 +78,7 @@ int main(int argc, char * argv[]) {
 
     unsigned long attempt = 1;
     while (1) {
-        const size_t size = rand() % read_max;
+        const size_t size = rand() % (read_max+1);
         if (!silent) {
             printf("Attempt %d (%d characters).\n", attempt, size);
         }
