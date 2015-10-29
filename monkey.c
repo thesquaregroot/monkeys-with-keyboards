@@ -21,27 +21,33 @@ char * getPrintableCharacters(size_t size);
 
 int main(int argc, char * argv[]) {
     bool verbose = 0;
+    bool silent = 0;
     size_t read_max = DEFAULT_READ_MAX;
     const char * output_file = DEFAULT_OUTPUT_FILE;
     const char * source_file = DEFAULT_SOURCE_FILE;
 
     int c;
-    while ((c = getopt (argc, argv, "i:hn:o:v")) != -1) {
+    while ((c = getopt (argc, argv, "hi:n:o:sv")) != -1) {
         switch (c) {
         case 'h':
-            printf("Usage: %s [-h] [-v] [-n max_size] [-i source_file] [-o output_file]\n", argv[0]);
+            printf("Usage: %s [-h] [-v] [-s] [-n max_size] [-i source_file] [-o output_file]\n", argv[0]);
             return 0;
-        case 'v':
-            verbose = 1;
-            break;
-        case 'o':
-            output_file = optarg;
-            break;
         case 'i':
             source_file = optarg;
             break;
         case 'n':
             read_max = atoi(optarg);
+            break;
+        case 'o':
+            output_file = optarg;
+            break;
+        case 's':
+            silent = 1;
+            verbose = 0;
+            break;
+        case 'v':
+            verbose = 1;
+            silent = 0;
             break;
         case '?':
             if (optopt == 'o' || optopt == 'i' || optopt == 'n') {
@@ -70,18 +76,22 @@ int main(int argc, char * argv[]) {
         return 1;
     }
 
-    unsigned int attempt = 1;
+    unsigned long attempt = 1;
     while (1) {
         const size_t size = rand() % read_max;
-        printf("Attempt %d (%d characters).\n", attempt, size);
+        if (!silent) {
+            printf("Attempt %d (%d characters).\n", attempt, size);
+        }
         bool success = tryNextRandomProgram(size, compile_command, source_file);
         if (success) {
-            printf("Success!  See %s for the valid program!\n", source_file);
+            printf("Success after %d attempts!  See %s for the valid program!\n", attempt, source_file);
             printf("  WARNING: You probably don't want to run %s!\n", output_file);
             break;
         } else {
-            printf("Failed.\n");
-            printf("--------------------\n");
+            if (verbose) {
+                printf("Failed.\n");
+                printf("--------------------\n");
+            }
             attempt++;
         }
     }
