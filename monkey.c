@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <time.h>
 
 typedef int bool; // for sanity
@@ -19,11 +20,43 @@ bool tryNextRandomProgram(size_t size, const char * compile_command, const char 
 char * getPrintableCharacters(size_t size);
 
 int main(int argc, char * argv[]) {
-    // TODO: override with command-line arguments
-    const bool verbose = 0;
-    const size_t read_max = DEFAULT_READ_MAX;
+    bool verbose = 0;
+    size_t read_max = DEFAULT_READ_MAX;
     const char * output_file = DEFAULT_OUTPUT_FILE;
     const char * source_file = DEFAULT_SOURCE_FILE;
+
+    int c;
+    while ((c = getopt (argc, argv, "i:hn:o:v")) != -1) {
+        switch (c) {
+        case 'h':
+            printf("Usage: %s [-h] [-v] [-n max_size] [-i source_file] [-o output_file]\n", argv[0]);
+            return 0;
+        case 'v':
+            verbose = 1;
+            break;
+        case 'o':
+            output_file = optarg;
+            break;
+        case 'i':
+            source_file = optarg;
+            break;
+        case 'n':
+            read_max = atoi(optarg);
+            break;
+        case '?':
+            if (optopt == 'o' || optopt == 'i' || optopt == 'n') {
+                fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+            } else if (isprint (optopt)) {
+                fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+            } else {
+                fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
+            }
+            return 1;
+        default:
+            fprintf(stderr, "Unrecognized argument '%c'.\n", c);
+            return 1;
+        }
+    }
 
     time_t now;
     srand((unsigned) time(&now));
