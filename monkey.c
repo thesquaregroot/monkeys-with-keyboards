@@ -14,7 +14,8 @@ const size_t MAX_COMMAND_SIZE = 256;
 const char * COMPILE_COMMAND_FORMAT = "gcc -o \"%s\" \"%s\"";
 const char * COMPILE_COMMAND_ERROR_REDIRECT = "&> /dev/null";
 
-bool tryNextRandomProgram(size_t size, const char * source_file, const char * output_file);
+bool buildCommand(char * compile_command, bool verbose, const char * output_file, const char * source_file);
+bool tryNextRandomProgram(size_t size, const char * compile_command, const char * output_file);
 char * getPrintableCharacters(size_t size);
 
 int main(int argc, char * argv[]) {
@@ -30,12 +31,8 @@ int main(int argc, char * argv[]) {
     setbuf(stdout, NULL); // disable stdout buffering
 
     char compile_command[MAX_COMMAND_SIZE];
-    int command_length = snprintf(compile_command, MAX_COMMAND_SIZE, COMPILE_COMMAND_FORMAT, output_file, source_file);
-    if (!verbose) {
-        strncat(compile_command, COMPILE_COMMAND_ERROR_REDIRECT, MAX_COMMAND_SIZE);
-        command_length += strlen(COMPILE_COMMAND_ERROR_REDIRECT);
-    }
-    if (command_length < 0 || command_length >= MAX_COMMAND_SIZE) {
+    bool good_command = buildCommand(compile_command, verbose, output_file, source_file);
+    if (!good_command) {
         printf("Unable to built command.  Built [%s].", compile_command);
         return 1;
     }
@@ -55,6 +52,15 @@ int main(int argc, char * argv[]) {
             attempt++;
         }
     }
+}
+
+bool buildCommand(char * compile_command, bool verbose, const char * output_file, const char * source_file) {
+    int command_length = snprintf(compile_command, MAX_COMMAND_SIZE, COMPILE_COMMAND_FORMAT, output_file, source_file);
+    if (!verbose) {
+        strncat(compile_command, COMPILE_COMMAND_ERROR_REDIRECT, MAX_COMMAND_SIZE);
+        command_length += strlen(COMPILE_COMMAND_ERROR_REDIRECT);
+    }
+    return command_length > 0 && command_length < MAX_COMMAND_SIZE;
 }
 
 bool tryNextRandomProgram(size_t size, const char * compile_command, const char * source_file) {
