@@ -14,7 +14,7 @@ const size_t MAX_COMMAND_SIZE = 256;
 const char * COMPILE_COMMAND_FORMAT = "gcc -o \"%s\" \"%s\"";
 const char * COMPILE_COMMAND_ERROR_REDIRECT = "&> /dev/null";
 
-bool tryNextRandomProgram(const bool verbose, size_t read_max, const char * source_file, const char * output_file);
+bool tryNextRandomProgram(size_t size, const char * source_file, const char * output_file);
 char * getPrintableCharacters(size_t size);
 
 int main(int argc, char * argv[]) {
@@ -42,30 +42,22 @@ int main(int argc, char * argv[]) {
 
     unsigned int attempt = 1;
     while (1) {
-        if (verbose) {
-            printf("Attempt %d.\n", attempt);
-        }
-        bool success = tryNextRandomProgram(verbose, read_max, compile_command, source_file);
+        const size_t size = rand() % read_max;
+        printf("Attempt %d (%d characters).\n", attempt, size);
+        bool success = tryNextRandomProgram(size, compile_command, source_file);
         if (success) {
             printf("Success!  See %s for the valid program!\n", source_file);
             printf("  WARNING: You probably don't want to run %s!\n", output_file);
             break;
         } else {
-            if (verbose) {
-                printf("Failed.\n");
-                printf("--------------------\n");
-            }
+            printf("Failed.\n");
+            printf("--------------------\n");
             attempt++;
         }
     }
 }
 
-bool tryNextRandomProgram(const bool verbose, const size_t read_max, const char * compile_command, const char * source_file) {
-    const size_t size = rand() % read_max;
-
-    if (verbose) {
-        printf("Reading %d printable characters.\n", size);
-    }
+bool tryNextRandomProgram(size_t size, const char * compile_command, const char * source_file) {
     const char * text = getPrintableCharacters(size);
 
     FILE * f = fopen(source_file, "w");
@@ -76,12 +68,17 @@ bool tryNextRandomProgram(const bool verbose, const size_t read_max, const char 
     return ret == 0;
 }
 
+char getRandomCharacter() {
+    return rand() & 0x7F; // get bits in ASCII range
+}
+
 char * getPrintableCharacters(size_t size) {
     char * text = malloc(size+1);
     for (int i=0; i<size; i++) {
-        char c = rand();
-        while (!isprint(c)) {
-            c = rand();
+        // random character in ASCII range
+        char c = getRandomCharacter();
+        while (!(isprint(c) || c == '\n')) {
+            c = getRandomCharacter();
         }
         text[i] = c;
     }
