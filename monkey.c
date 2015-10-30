@@ -12,7 +12,7 @@ const char * DEFAULT_SOURCE_FILE = "_test.c";
 const char * DEFAULT_OUTPUT_FILE = "_a.out";
 
 const size_t MAX_COMMAND_SIZE = 256;
-const char * COMPILE_COMMAND_FORMAT = "gcc -o \"%s\" \"%s\"";
+const char * COMPILE_COMMAND_FORMAT = "gcc -Wfatal-errors -o \"%s\" \"%s\"";
 const char * COMPILE_COMMAND_ERROR_REDIRECT = "&> /dev/null";
 
 bool buildCommand(char * compile_command, bool verbose, const char * output_file, const char * source_file);
