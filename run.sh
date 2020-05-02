@@ -1,3 +1,3 @@
 #!/bin/bash
-./monkey $@ &> out.log
+exec ./monkey $@ &> out.log
 

@@ -32,8 +32,7 @@
 *.dSYM/
 
 # Output files
-_test.c
-_a.out
-out.log
+tmp/
 monkey
+out.log
 
