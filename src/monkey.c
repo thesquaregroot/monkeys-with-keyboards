@@ -13,7 +13,6 @@ typedef int bool; // for sanity
 static volatile bool keepRunning = 1;
 
 void interruptHandler(int signal) {
-    printf("Interrupt received.\n");
     keepRunning = 0;
 }
 
@@ -102,6 +101,7 @@ int main(int argc, char * argv[]) {
     }
 
     signal(SIGINT, interruptHandler);
+    signal(SIGTERM, interruptHandler);
 
     char compile_command[MAX_COMMAND_SIZE];
     bool good_command = buildCommand(compile_command, verbose, source_file, output_file);
