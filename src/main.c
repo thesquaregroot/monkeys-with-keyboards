@@ -156,7 +156,7 @@ int main(int argc, char * argv[]) {
         while (*thread_iterator != 0) {
             pthread_t thread_id = *thread_iterator;
             pthread_join(thread_id, NULL);
-            printf("Joined thread %ld\n", thread_id);
+            printf("Joined thread %d\n", args_iterator->index);
             thread_iterator++;
             args_iterator++;
         }
