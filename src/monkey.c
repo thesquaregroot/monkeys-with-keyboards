@@ -27,7 +27,7 @@ int monkey(const char * source_file, const char * output_file, int read_max, boo
     while (KEEP_MONKEYING) {
         const size_t size = rand() % (read_max+1);
         if (!silent) {
-            printf("Attempt %ld (%ld characters).\n", attempt, size);
+            printf("%s: attempt %ld (%ld characters).\n", source_file, attempt, size);
         }
         bool success = tryNextRandomProgram(size, compile_command, source_file, output_file);
         if (success) {
@@ -46,6 +46,10 @@ int monkey(const char * source_file, const char * output_file, int read_max, boo
     return 0;
 }
 
+void stopMonkeying() {
+    KEEP_MONKEYING = false;
+}
+
 bool doesOutputFileExist(const char * output_file);
 
 bool buildCommand(char * compile_command, size_t max_command_length, bool verbose, const char * source_file, const char * output_file) {
@@ -58,11 +62,13 @@ bool buildCommand(char * compile_command, size_t max_command_length, bool verbos
 }
 
 bool tryNextRandomProgram(size_t size, const char * compile_command, const char * source_file, const char * output_file) {
-    const char * text = getPrintableCharacters(size);
+    char * text = getPrintableCharacters(size);
 
     FILE * f = fopen(source_file, "w");
     fputs(text, f);
     fclose(f);
+
+    free(text);
 
     int ret = system(compile_command);
     if (ret == -1) {
