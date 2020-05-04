@@ -11,7 +11,7 @@
 #include "monkey.h"
 
 void interruptHandler(int signal) {
-    KEEP_MONKEYING = 0;
+    KEEP_MONKEYING = false;
 }
 
 const size_t DEFAULT_READ_MAX = 1024;
@@ -22,8 +22,8 @@ const char * DEFAULT_OUTPUT_FILE_NAME = "_a.out";
 int createOrEmptyTmpDirectory(const char * output_directory);
 
 int main(int argc, char * argv[]) {
-    bool verbose = 0;
-    bool silent = 0;
+    bool verbose = false;
+    bool silent = false;
     size_t read_max = DEFAULT_READ_MAX;
     const char * output_file_name = DEFAULT_OUTPUT_FILE_NAME;
     const char * source_file_name = DEFAULT_SOURCE_FILE_NAME;
@@ -54,12 +54,12 @@ int main(int argc, char * argv[]) {
             output_file_name = optarg;
             break;
         case 's':
-            silent = 1;
-            verbose = 0;
+            silent = true;
+            verbose = false;
             break;
         case 'v':
-            verbose = 1;
-            silent = 0;
+            verbose = true;
+            silent = false;
             break;
         case '?':
             if (optopt == 'o' || optopt == 'i' || optopt == 'n') {

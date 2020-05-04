@@ -6,7 +6,7 @@
 #include "seed.h"
 #include "monkey.h"
 
-volatile bool KEEP_MONKEYING = 1;
+volatile bool KEEP_MONKEYING = true;
 
 const size_t MAX_COMMAND_LENGTH = 256;
 
